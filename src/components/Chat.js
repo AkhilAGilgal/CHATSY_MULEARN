@@ -8,31 +8,33 @@ import {
   serverTimestamp,
   where,
 } from "firebase/firestore";
-import { auth, db } from "../firebase-config";
+// We removed the 'auth' import as it is no longer needed
+import { db } from "../firebase-config";
 import "../App.css";
 
-export const Chat = ({ room }) => {
+// We now accept 'user' as a prop
+export const Chat = ({ room, user }) => {
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesRef = collection(db, "messages");
 
-  
-useEffect(() => {
-  const queryMessages = query(
-    messagesRef,
-    where("room", "==", room),
-    orderBy("createdAt")
-  );
-  const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
-    let messages = [];
-    snapshot.forEach((doc) => {
-      messages.push({ ...doc.data(), id: doc.id });
+  useEffect(() => {
+    const queryMessages = query(
+      messagesRef,
+      where("room", "==", room),
+      orderBy("createdAt")
+    );
+    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
+      let messages = [];
+      snapshot.forEach((doc) => {
+        messages.push({ ...doc.data(), id: doc.id });
+      });
+      setMessages(messages);
     });
-    setMessages(messages);
-  });
 
-  return () => unsubscribe();
-}, [room, messagesRef]); 
+    return () => unsubscribe();
+    // We fixed the useEffect dependencies based on the previous error
+  }, [room, messagesRef]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +43,8 @@ useEffect(() => {
     await addDoc(messagesRef, {
       text: newMessage,
       createdAt: serverTimestamp(),
-      user: auth.currentUser.displayName,
+      // We now get the username from the 'user' prop
+      user: user,
       room,
     });
 
