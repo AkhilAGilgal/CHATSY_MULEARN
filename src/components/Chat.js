@@ -16,22 +16,23 @@ export const Chat = ({ room }) => {
   const [messages, setMessages] = useState([]);
   const messagesRef = collection(db, "messages");
 
-  useEffect(() => {
-    const queryMessages = query(
-      messagesRef,
-      where("room", "==", room),
-      orderBy("createdAt")
-    );
-    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
-      let messages = [];
-      snapshot.forEach((doc) => {
-        messages.push({ ...doc.data(), id: doc.id });
-      });
-      setMessages(messages);
+  
+useEffect(() => {
+  const queryMessages = query(
+    messagesRef,
+    where("room", "==", room),
+    orderBy("createdAt")
+  );
+  const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
+    let messages = [];
+    snapshot.forEach((doc) => {
+      messages.push({ ...doc.data(), id: doc.id });
     });
+    setMessages(messages);
+  });
 
-    return () => unsubscribe();
-  }, []);
+  return () => unsubscribe();
+}, [room, messagesRef]); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
