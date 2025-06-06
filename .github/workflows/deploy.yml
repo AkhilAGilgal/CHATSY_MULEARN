@@ -1,48 +1,4 @@
 # Workflow for building and deploying a React app to GitHub Pages
-name: Deploy React App to GitHub Pages
-
-on:
-  # Runs on pushes targeting the main branch
-  push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
-jobs:
-  # Build and reliable new version.
-
-**In simple terms: Your `deploy.yml` recipe is using an old ingredient, and the GitHub kitchen is now refusing to cook with it.**
-
-### The Solution: Update the Workflow File
-
-We need to edit the `.github/workflows/deploy.yml` file to use the modern, officially recommended actions for deploying to GitHub Pages. This involves replacing the old `actions/upload-artifact` with its modern replacement.
-
-**Step-by-Step Instructions:**
-
-1.  **Go to your workflow file on GitHub:**
-    *   Navigate to your repository.
-    *   Click on the `.github` folder, then the `workflows` folder, and then click on the **`deploy.yml`** file.
-
-2.  **Click the pencil icon** in the top-right corner to edit the file.
-
-3.  **Delete everything** currently in the file. Make it completely empty.
-
-4.  **Copy the entire code block below** and paste it into the editor. This is the up-to-date version that uses the correct, modern tools.
-
-```yml
-# Workflow for building and deploying a React app to GitHub Pages
 name: Deploy React App to Pages
 
 on:
@@ -65,12 +21,9 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    steps deploy job
-  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -79,28 +32,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build React app
-        run: npm run build
-
-      - name:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build application
-        run: Setup GitHub Pages
+        run: npm run build
+
+      - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Upload build artifact
@@ -112,23 +52,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-```: npm run build
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
-
-      -
-
-5.  **Commit the changes:** Scroll to the bottom, type a commit message like "Update deployment workflow to use latest actions", and click **Commit changes**.
-
-### What Happens Now
-
-This name: Upload build artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './build'
-          
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions new workflow file is now the official instruction manual for deployment.
-*   The `uses: actions/upload-pages-artifact/deploy-pages@v4
