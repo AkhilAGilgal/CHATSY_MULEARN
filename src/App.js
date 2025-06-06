@@ -1,49 +1,67 @@
-import React, { useState, useRef } from "react";
-import { auth } from "./firebase-config";
-import { signOut } from "firebase/auth";
-import Cookies from "universal-cookie";
-import { Auth } from "./components/Auth";
+import React, { useState, useEffect } from "react";
 import { Chat } from "./components/Chat";
 import "./App.css";
 
-const cookies = new Cookies();
-
 function App() {
-  const [isAuth, setIsAuth] = useState(cookies.get("auth-token"));
+  // We no longer use isAuth. We now check if a user object exists.
+  const [user, setUser] = useState(null);
   const [room, setRoom] = useState(null);
-  const roomInputRef = useRef(null);
 
-  const signUserOut = async () => {
-    await signOut(auth);
-    cookies.remove("auth-token");
-    setIsAuth(false);
+  // This ref is for the room input
+  const roomInputRef = React.useRef(null);
+  
+  // This ref is for the username input
+  const nameInputRef = React.useRef(null);
+
+  // This function now just clears the user and room from state
+  const logOut = () => {
+    setUser(null);
     setRoom(null);
   };
 
-  if (!isAuth) {
+  // The main view logic
+  // 1. If no user is set, show the username input form.
+  if (!user) {
     return (
-      <div>
-        <Auth setIsAuth={setIsAuth} />
+      <div className="room">
+        <label>Enter Your Name To Join</label>
+        <input ref={nameInputRef} />
+        <button
+          onClick={() => {
+            if (nameInputRef.current.value) {
+              setUser(nameInputRef.current.value);
+            }
+          }}
+        >
+          Join
+        </button>
       </div>
     );
   }
 
+  // 2. If a user is set, but no room, show the room selection form.
   return (
     <>
       {room ? (
-        <Chat room={room} />
+        <Chat room={room} user={user} />
       ) : (
         <div className="room">
           <label>Enter Room Name:</label>
           <input ref={roomInputRef} />
-          <button onClick={() => setRoom(roomInputRef.current.value)}>
+          <button
+            onClick={() => {
+              if (roomInputRef.current.value) {
+                setRoom(roomInputRef.current.value);
+              }
+            }}
+          >
             Enter Chat
           </button>
         </div>
       )}
 
       <div className="sign-out">
-        <button onClick={signUserOut}>Sign Out</button>
+        <button onClick={logOut}>Leave</button>
       </div>
     </>
   );
